@@ -3,10 +3,7 @@ package com.appagility.shipping;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,9 +29,19 @@ public class ShippingRestEndpoint {
         return commandGateway.send(new CreateShipCommand(shipId, createShipRequest.getName()));
     }
 
-    @GetMapping("/ships")
-    public CompletableFuture<List<Ship>> getAllShips() {
+    @PostMapping("/shipReadier")
+    public CompletableFuture<Void> readyShip(@RequestBody ShipReadierRequest shipReadierRequest) {
 
-        return queryGateway.query(new FindAllShipsQuery(), ResponseTypes.multipleInstancesOf(Ship.class));
+        return commandGateway.send(new ReadyForSailingCommand(shipReadierRequest.getShipId()));
+    }
+
+    @GetMapping("/ships")
+    public CompletableFuture<List<Ship>> getAllShips(@RequestParam(name = "onlyReadyForSailing", required = false) Boolean onlyReadyForSailing) {
+
+        var command = Boolean.TRUE.equals(onlyReadyForSailing)
+                ? new FindAllShipsReadyForSailingQuery()
+                : new FindAllShipsQuery();
+
+        return queryGateway.query(command, ResponseTypes.multipleInstancesOf(Ship.class));
     }
 }

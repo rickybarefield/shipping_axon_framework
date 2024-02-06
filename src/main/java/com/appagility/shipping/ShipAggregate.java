@@ -14,10 +14,23 @@ public class ShipAggregate {
 
     private String shipName;
 
+    private boolean readyForSailing;
+
     @CommandHandler
     public ShipAggregate(CreateShipCommand createShipCommand) {
 
         AggregateLifecycle.apply(new ShipCreatedEvent(createShipCommand.getShipId(), createShipCommand.getShipName()));
+    }
+
+    @CommandHandler
+    public void handle(ReadyForSailingCommand readyForSailingCommand) {
+
+        if(readyForSailing) {
+
+            throw new AlreadyReadyForSailingException();
+        }
+
+        AggregateLifecycle.apply(new ShipReadyForSailingEvent(readyForSailingCommand.getShipId()));
     }
 
     @EventSourcingHandler
@@ -25,6 +38,7 @@ public class ShipAggregate {
 
         this.shipId = shipCreatedEvent.getShipId();
         this.shipName = shipCreatedEvent.getShipName();
+        this.readyForSailing = false;
     }
 
     protected ShipAggregate() {

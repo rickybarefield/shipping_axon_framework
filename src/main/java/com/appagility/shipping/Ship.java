@@ -1,20 +1,33 @@
 package com.appagility.shipping;
 
-import java.util.Objects;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
+@Entity
 public class Ship {
 
-    private final String shipId;
+    @Id
+    private String shipId;
     private String shipName;
+
+    private boolean isReadyForSailing;
+
+    public Ship() {
+    }
 
     public Ship(String shipId, String shipName) {
 
         this.shipId = shipId;
         this.shipName = shipName;
+        this.isReadyForSailing = false;
     }
 
     public String getShipId() {
         return shipId;
+    }
+
+    public void setShipId(String shipId) {
+        this.shipId = shipId;
     }
 
     public String getShipName() {
@@ -25,29 +38,12 @@ public class Ship {
         this.shipName = shipName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        Ship ship = (Ship) o;
-
-        if (!Objects.equals(shipId, ship.shipId)) return false;
-        return Objects.equals(shipName, ship.shipName);
+    public boolean isReadyForSailing() {
+        return isReadyForSailing;
     }
 
-    @Override
-    public int hashCode() {
-        int result = shipId != null ? shipId.hashCode() : 0;
-        result = 31 * result + (shipName != null ? shipName.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Ship{" +
-                "shipId='" + shipId + '\'' +
-                ", shipName='" + shipName + '\'' +
-                '}';
+    public void setReadyForSailing(boolean readyForSailing) {
+        isReadyForSailing = readyForSailing;
     }
 }
