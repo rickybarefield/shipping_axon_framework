@@ -1,0 +1,61 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "insomnia@latest": {
+      "last_modified": "2024-01-14T03:55:27Z",
+      "resolved": "github:NixOS/nixpkgs/dd5621df6dcb90122b50da5ec31c411a0de3e538#insomnia",
+      "source": "devbox-search",
+      "version": "2023.5.8",
+      "systems": {
+        "x86_64-linux": {
+          "store_path": "/nix/store/d454smh5c9vgx41gwcxa5r412mgz6y6c-insomnia-2023.5.8"
+        }
+      }
+    },
+    "jdk@21": {
+      "last_modified": "2024-01-27T14:55:31Z",
+      "resolved": "github:NixOS/nixpkgs/160b762eda6d139ac10ae081f8f78d640dd523eb#jdk21",
+      "source": "devbox-search",
+      "version": "21.0.0",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/kx0xbsi4513daqjaypgc506fqsfb1f7d-zulu-ca-jdk-21.0.0"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/bkmawrs242ylhjxz17w9icg1s07vdaw3-zulu-ca-jdk-21.0.0"
+        }
+      }
+    },
+    "jetbrains.idea-community@latest": {
+      "last_modified": "2024-01-18T00:05:01Z",
+      "resolved": "github:NixOS/nixpkgs/921fb3319c2a296fc65048272d22f3db889d7292#jetbrains.idea-community",
+      "source": "devbox-search",
+      "version": "2023.3.2",
+      "systems": {
+        "x86_64-linux": {
+          "store_path": "/nix/store/gq5ygqf5rafaaxm9jz511s0h3may4mgf-idea-community-2023.3.2"
+        }
+      }
+    },
+    "maven@latest": {
+      "last_modified": "2024-01-14T03:55:27Z",
+      "resolved": "github:NixOS/nixpkgs/dd5621df6dcb90122b50da5ec31c411a0de3e538#maven",
+      "source": "devbox-search",
+      "version": "3.9.6",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/3vzw8a82ws719jgqgbnxgb289l27720d-apache-maven-3.9.6"
+        },
+        "aarch64-linux": {
+          "store_path": "/nix/store/9i931qnlhjb84va756qzqm36babsc5pj-apache-maven-3.9.6"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/l4flyq7hfpx91543rdl742rc98canf7x-apache-maven-3.9.6"
+        },
+        "x86_64-linux": {
+          "store_path": "/nix/store/x6kjqhlmf64hfbig2ykfxg5rqshsvaqf-apache-maven-3.9.6"
+        }
+      }
+    }
+  }
+}
