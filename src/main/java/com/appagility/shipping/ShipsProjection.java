@@ -33,12 +33,12 @@ public class ShipsProjection {
     @QueryHandler
     public List<Ship> handle(FindAllShipsQuery findAllShipsQuery) {
 
-        return entityManager.createQuery("SELECT s FROM Ships").getResultList();
+        return entityManager.createQuery("FROM com.appagility.shipping.Ship").getResultList();
     }
 
     @QueryHandler
     public List<Ship> handle(FindAllShipsReadyForSailingQuery findAllShipsReadyQuery) {
 
-        return entityManager.createQuery("SELECT s FROM Ships WHERE s.isReadyForSailing = true").getResultList();
+        return entityManager.createQuery("FROM com.appagility.shipping.Ship s WHERE s.isReadyForSailing = true").getResultList();
     }
 }

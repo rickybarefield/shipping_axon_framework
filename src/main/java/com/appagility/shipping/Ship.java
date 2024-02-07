@@ -2,8 +2,10 @@ package com.appagility.shipping;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-@Entity
+@Entity(name = "Ship")
+@Table
 public class Ship {
 
     @Id
