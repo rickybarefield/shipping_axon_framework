@@ -22,3 +22,12 @@ Projection which is created and stored in RDBMS using JPA.
 Uses RDBMS for storing events due to axon.axonserver.enabled being set to false in application.yml
 
 H2 in memory db server for ease of use
+
+## Aspects to try
+
+- [x] Commands and events
+- [x] Projection
+- [x] Events and Projection in RDBMS
+- [ ] Adding a projection when there's old events
+- [ ] Updating the aggregate
+- [ ] Updating events (versioning?)

@@ -44,4 +44,16 @@ public class ShippingRestEndpoint {
 
         return queryGateway.query(command, ResponseTypes.multipleInstancesOf(Ship.class));
     }
+
+    @PostMapping("/sailing")
+    public CompletableFuture<Void> createSailing(SailShipRequest sailShipRequest) {
+
+        return commandGateway.send(new SailShipCommand(sailShipRequest.getShipId(), sailShipRequest.getDestination()));
+    }
+
+    @PostMapping("/docker")
+    public CompletableFuture<Void> dockShip(DockShipRequest dockShipRequest) {
+
+        return commandGateway.send(new DockShipCommand(dockShipRequest.getShipId(), dockShipRequest.getLocation()));
+    }
 }

@@ -14,7 +14,13 @@ public class ShipAggregate {
 
     private String shipName;
 
+    private String location;
+
+    private String destination;
+
     private boolean readyForSailing;
+
+    private boolean shipIsSailing = false;
 
     @CommandHandler
     public ShipAggregate(CreateShipCommand createShipCommand) {
@@ -33,12 +39,56 @@ public class ShipAggregate {
         AggregateLifecycle.apply(new ShipReadyForSailingEvent(readyForSailingCommand.getShipId()));
     }
 
+    @CommandHandler
+    public void handle(SailShipCommand sailShipCommand) {
+
+        if(!readyForSailing) {
+
+            throw new NotReadyForSailingException();
+        }
+
+        AggregateLifecycle.apply(new ShipSailedEvent(sailShipCommand.getShipId(), location, sailShipCommand.getDestination()));
+    }
+
+    @CommandHandler
+    public void handle(DockShipCommand dockShipCommand) {
+
+        if(!shipIsSailing) {
+
+            throw new CannotDockAShipThatIsNotSailingException();
+        }
+
+        AggregateLifecycle.apply(new ShipDockedEvent(dockShipCommand.getShipId(), dockShipCommand.getLocation()));
+    }
+
     @EventSourcingHandler
     public void on(ShipCreatedEvent shipCreatedEvent) {
 
         this.shipId = shipCreatedEvent.getShipId();
         this.shipName = shipCreatedEvent.getShipName();
         this.readyForSailing = false;
+    }
+
+    @EventSourcingHandler
+    public void on(ShipDockedEvent shipDockedEvent) {
+
+        this.destination = null;
+        this.location = shipDockedEvent.getLocation();
+        this.shipIsSailing = false;
+    }
+
+    @EventSourcingHandler
+    public void on(ShipReadyForSailingEvent shipReadyForSailingEvent) {
+
+        this.readyForSailing = true;
+    }
+
+    @EventSourcingHandler
+    public void on(ShipSailedEvent shipSailedEvent) {
+
+        this.location = null;
+        this.destination = shipSailedEvent.getDestination();
+        this.shipIsSailing = true;
     }
 
     protected ShipAggregate() {

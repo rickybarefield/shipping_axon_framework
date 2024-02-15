@@ -5,3 +5,4 @@
 /data
 /log
 AxonIQ.pid
+data.*
