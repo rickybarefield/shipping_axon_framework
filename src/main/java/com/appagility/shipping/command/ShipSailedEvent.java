@@ -1,4 +1,4 @@
-package com.appagility.shipping;
+package com.appagility.shipping.command;
 
 import java.util.Objects;
 

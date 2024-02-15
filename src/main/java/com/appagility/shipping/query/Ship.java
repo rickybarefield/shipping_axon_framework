@@ -1,4 +1,4 @@
-package com.appagility.shipping;
+package com.appagility.shipping.query;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

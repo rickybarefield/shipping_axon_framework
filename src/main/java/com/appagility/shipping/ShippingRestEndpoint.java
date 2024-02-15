@@ -1,5 +1,10 @@
 package com.appagility.shipping;
 
+import com.appagility.shipping.command.CreateShipCommand;
+import com.appagility.shipping.command.DockShipCommand;
+import com.appagility.shipping.command.ReadyForSailingCommand;
+import com.appagility.shipping.command.SailShipCommand;
+import com.appagility.shipping.query.*;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -29,7 +34,7 @@ public class ShippingRestEndpoint {
         return commandGateway.send(new CreateShipCommand(shipId, createShipRequest.getName()));
     }
 
-    @PostMapping("/shipReadier")
+    @PostMapping("/shipReadiers")
     public CompletableFuture<Void> readyShip(@RequestBody ShipReadierRequest shipReadierRequest) {
 
         return commandGateway.send(new ReadyForSailingCommand(shipReadierRequest.getShipId()));
@@ -38,21 +43,27 @@ public class ShippingRestEndpoint {
     @GetMapping("/ships")
     public CompletableFuture<List<Ship>> getAllShips(@RequestParam(name = "onlyReadyForSailing", required = false) Boolean onlyReadyForSailing) {
 
-        var command = Boolean.TRUE.equals(onlyReadyForSailing)
+        var query = Boolean.TRUE.equals(onlyReadyForSailing)
                 ? new FindAllShipsReadyForSailingQuery()
                 : new FindAllShipsQuery();
 
-        return queryGateway.query(command, ResponseTypes.multipleInstancesOf(Ship.class));
+        return queryGateway.query(query, ResponseTypes.multipleInstancesOf(Ship.class));
     }
 
-    @PostMapping("/sailing")
-    public CompletableFuture<Void> createSailing(SailShipRequest sailShipRequest) {
+    @GetMapping("/sailings")
+    public CompletableFuture<List<Sailing>> getSailings(@RequestParam(name = "onlyUnintendedDestinations", required = false) Boolean onlyUnintendedDestinations) {
+
+        return queryGateway.query(new FindAllSailingsQuery(Boolean.TRUE.equals(onlyUnintendedDestinations)), ResponseTypes.multipleInstancesOf(Sailing.class));
+    }
+
+    @PostMapping("/sailings")
+    public CompletableFuture<Void> createSailing(@RequestBody SailShipRequest sailShipRequest) {
 
         return commandGateway.send(new SailShipCommand(sailShipRequest.getShipId(), sailShipRequest.getDestination()));
     }
 
-    @PostMapping("/docker")
-    public CompletableFuture<Void> dockShip(DockShipRequest dockShipRequest) {
+    @PostMapping("/dockers")
+    public CompletableFuture<Void> dockShip(@RequestBody DockShipRequest dockShipRequest) {
 
         return commandGateway.send(new DockShipCommand(dockShipRequest.getShipId(), dockShipRequest.getLocation()));
     }

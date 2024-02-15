@@ -1,5 +1,7 @@
-package com.appagility.shipping;
+package com.appagility.shipping.query;
 
+import com.appagility.shipping.command.ShipCreatedEvent;
+import com.appagility.shipping.command.ShipReadyForSailingEvent;
 import jakarta.persistence.EntityManager;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
@@ -33,12 +35,12 @@ public class ShipsProjection {
     @QueryHandler
     public List<Ship> handle(FindAllShipsQuery findAllShipsQuery) {
 
-        return entityManager.createQuery("FROM com.appagility.shipping.Ship").getResultList();
+        return entityManager.createQuery("FROM com.appagility.shipping.query.Ship").getResultList();
     }
 
     @QueryHandler
     public List<Ship> handle(FindAllShipsReadyForSailingQuery findAllShipsReadyQuery) {
 
-        return entityManager.createQuery("FROM com.appagility.shipping.Ship s WHERE s.isReadyForSailing = true").getResultList();
+        return entityManager.createQuery("FROM com.appagility.shipping.query.Ship s WHERE s.isReadyForSailing = true").getResultList();
     }
 }

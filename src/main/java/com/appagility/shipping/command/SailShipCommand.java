@@ -1,4 +1,4 @@
-package com.appagility.shipping;
+package com.appagility.shipping.command;
 
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 

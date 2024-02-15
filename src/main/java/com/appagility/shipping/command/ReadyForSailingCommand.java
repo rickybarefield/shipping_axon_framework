@@ -1,12 +1,17 @@
-package com.appagility.shipping;
+package com.appagility.shipping.command;
+
+import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 import java.util.Objects;
 
-public class ShipReadyForSailingEvent {
+public class ReadyForSailingCommand {
 
+    @TargetAggregateIdentifier
     private final String shipId;
 
-    public ShipReadyForSailingEvent(String shipId) {
+
+    public ReadyForSailingCommand(String shipId) {
+
         this.shipId = shipId;
     }
 
@@ -19,7 +24,7 @@ public class ShipReadyForSailingEvent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ShipReadyForSailingEvent that = (ShipReadyForSailingEvent) o;
+        ReadyForSailingCommand that = (ReadyForSailingCommand) o;
 
         return Objects.equals(shipId, that.shipId);
     }
@@ -31,7 +36,8 @@ public class ShipReadyForSailingEvent {
 
     @Override
     public String toString() {
-        return "ShipReadyForSailingEvent{" +
+
+        return "ReadyForSailingCommand{" +
                 "shipId='" + shipId + '\'' +
                 '}';
     }

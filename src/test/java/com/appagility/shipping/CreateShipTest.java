@@ -1,5 +1,8 @@
 package com.appagility.shipping;
 
+import com.appagility.shipping.command.CreateShipCommand;
+import com.appagility.shipping.command.ShipAggregate;
+import com.appagility.shipping.command.ShipCreatedEvent;
 import org.axonframework.test.aggregate.AggregateTestFixture;
 import org.axonframework.test.aggregate.FixtureConfiguration;
 import org.junit.jupiter.api.BeforeEach;

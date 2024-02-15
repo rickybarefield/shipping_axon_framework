@@ -1,18 +1,23 @@
-package com.appagility.shipping;
+package com.appagility.shipping.command;
+
+import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 import java.util.Objects;
 
-public class ShipDockedEvent {
+public class DockShipCommand {
 
+    @TargetAggregateIdentifier
     private final String shipId;
+
     private final String location;
 
-    public ShipDockedEvent(String shipId, String location) {
+    public DockShipCommand(String shipId, String location) {
         this.shipId = shipId;
         this.location = location;
     }
 
     public String getShipId() {
+
         return shipId;
     }
 
@@ -25,7 +30,7 @@ public class ShipDockedEvent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ShipDockedEvent that = (ShipDockedEvent) o;
+        DockShipCommand that = (DockShipCommand) o;
 
         if (!Objects.equals(shipId, that.shipId)) return false;
         return Objects.equals(location, that.location);
@@ -40,7 +45,7 @@ public class ShipDockedEvent {
 
     @Override
     public String toString() {
-        return "ShipDockedEvent{" +
+        return "DockShipCommand{" +
                 "shipId='" + shipId + '\'' +
                 ", location='" + location + '\'' +
                 '}';

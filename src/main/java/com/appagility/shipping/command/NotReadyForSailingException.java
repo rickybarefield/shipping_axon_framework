@@ -1,4 +1,4 @@
-package com.appagility.shipping;
+package com.appagility.shipping.command;
 
 public class NotReadyForSailingException extends IllegalStateException {
 
