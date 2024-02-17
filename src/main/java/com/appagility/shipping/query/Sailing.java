@@ -61,4 +61,20 @@ public class Sailing {
     public void setStatedDestination(String statedDestination) {
         this.statedDestination = statedDestination;
     }
+
+    public boolean arrivedInUnintendedDestination() {
+
+        return destination != null && !destination.equals(statedDestination);
+    }
+
+    @Override
+    public String toString() {
+        return "Sailing{" +
+                "id='" + id + '\'' +
+                ", shipId='" + shipId + '\'' +
+                ", source='" + source + '\'' +
+                ", destination='" + destination + '\'' +
+                ", statedDestination='" + statedDestination + '\'' +
+                '}';
+    }
 }

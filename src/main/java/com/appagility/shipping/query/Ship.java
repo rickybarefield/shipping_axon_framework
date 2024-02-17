@@ -48,4 +48,13 @@ public class Ship {
     public void setReadyForSailing(boolean readyForSailing) {
         isReadyForSailing = readyForSailing;
     }
+
+    @Override
+    public String toString() {
+        return "Ship{" +
+                "shipId='" + shipId + '\'' +
+                ", shipName='" + shipName + '\'' +
+                ", isReadyForSailing=" + isReadyForSailing +
+                '}';
+    }
 }

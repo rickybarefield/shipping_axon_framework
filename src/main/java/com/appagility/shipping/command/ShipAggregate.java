@@ -1,6 +1,7 @@
 package com.appagility.shipping.command;
 
 import org.axonframework.commandhandling.CommandHandler;
+import org.axonframework.common.IdentifierFactory;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
@@ -25,7 +26,7 @@ public class ShipAggregate {
     @CommandHandler
     public ShipAggregate(CreateShipCommand createShipCommand) {
 
-        AggregateLifecycle.apply(new ShipCreatedEvent(createShipCommand.getShipId(), createShipCommand.getShipName()));
+        AggregateLifecycle.apply(new ShipCreatedEvent(IdentifierFactory.getInstance().generateIdentifier(), createShipCommand.getShipName()));
     }
 
     @CommandHandler

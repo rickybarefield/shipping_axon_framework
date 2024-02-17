@@ -28,10 +28,9 @@ public class ShippingRestEndpoint {
     }
 
     @PostMapping("/ships")
-    public CompletableFuture<Void> createShip(@RequestBody CreateShipRequest createShipRequest) {
+    public CompletableFuture<String> createShip(@RequestBody CreateShipRequest createShipRequest) {
 
-        String shipId = UUID.randomUUID().toString();
-        return commandGateway.send(new CreateShipCommand(shipId, createShipRequest.getName()));
+        return commandGateway.send(new CreateShipCommand(createShipRequest.getName()));
     }
 
     @PostMapping("/shipReadiers")

@@ -5,6 +5,12 @@ public class SailShipRequest {
     private String shipId;
     private String destination;
 
+    public SailShipRequest(String shipId, String destination) {
+
+        this.shipId = shipId;
+        this.destination = destination;
+    }
+
     public SailShipRequest() {
     }
 

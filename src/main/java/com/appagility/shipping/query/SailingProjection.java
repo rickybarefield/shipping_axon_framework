@@ -5,6 +5,7 @@ import com.appagility.shipping.command.ShipSailedEvent;
 import jakarta.persistence.EntityManager;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
+import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +15,12 @@ public class SailingProjection {
 
     private final EntityManager entityManager;
 
-    public SailingProjection(EntityManager entityManager) {
+    private final QueryUpdateEmitter queryUpdateEmitter;
+
+    public SailingProjection(EntityManager entityManager, QueryUpdateEmitter queryUpdateEmitter) {
 
         this.entityManager = entityManager;
+        this.queryUpdateEmitter = queryUpdateEmitter;
     }
 
     @EventHandler
@@ -25,6 +29,7 @@ public class SailingProjection {
         var sailing = new Sailing(shipSailedEvent.getShipId(), shipSailedEvent.getSource(), null, shipSailedEvent.getDestination());
 
         entityManager.persist(sailing);
+        queryUpdateEmitter.emit(FindAllSailingsQuery.class, q -> true, sailing);
     }
 
     @EventHandler
@@ -49,13 +54,14 @@ public class SailingProjection {
         var sailing = (Sailing)results.get(0);
 
         sailing.setDestination(shipDockedEvent.getLocation());
+        queryUpdateEmitter.emit(FindAllSailingsQuery.class, q -> !q.isLimitToUnintendedDestinations() || sailing.arrivedInUnintendedDestination(), sailing);
     }
 
     @QueryHandler
     public List<Sailing> handle(FindAllSailingsQuery findAllSailingsQuery) {
 
         final String query = findAllSailingsQuery.isLimitToUnintendedDestinations()
-                ? "FROM Sailing s WHERE s.destination != s.statedDestination"
+                ? "FROM Sailing s WHERE s.destination IS NOT NULL AND s.destination != s.statedDestination"
                 : "From Sailing s";
 
         return entityManager.createQuery(query).getResultList();

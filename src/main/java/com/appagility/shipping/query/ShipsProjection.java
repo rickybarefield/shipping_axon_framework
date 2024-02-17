@@ -5,6 +5,7 @@ import com.appagility.shipping.command.ShipReadyForSailingEvent;
 import jakarta.persistence.EntityManager;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
+import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,16 +14,20 @@ import java.util.List;
 public class ShipsProjection {
 
     private final EntityManager entityManager;
+    private final QueryUpdateEmitter queryUpdateEmitter;
 
-    public ShipsProjection(EntityManager entityManager) {
+    public ShipsProjection(EntityManager entityManager, QueryUpdateEmitter queryUpdateEmitter) {
 
         this.entityManager = entityManager;
+        this.queryUpdateEmitter = queryUpdateEmitter;
     }
 
     @EventHandler
     public void on(ShipCreatedEvent shipCreatedEvent) {
 
-        entityManager.persist(new Ship(shipCreatedEvent.getShipId(), shipCreatedEvent.getShipName()));
+        Ship newShip = new Ship(shipCreatedEvent.getShipId(), shipCreatedEvent.getShipName());
+        entityManager.persist(newShip);
+        queryUpdateEmitter.emit(FindAllShipsQuery.class, x -> true, newShip);
     }
 
     @EventHandler
@@ -30,6 +35,8 @@ public class ShipsProjection {
 
         var ship = entityManager.find(Ship.class, shipReadyEvent.getShipId());
         ship.setReadyForSailing(true);
+        queryUpdateEmitter.emit(FindAllShipsQuery.class, x -> true, ship);
+        queryUpdateEmitter.emit(FindAllShipsReadyForSailingQuery.class, x -> true, ship);
     }
 
     @QueryHandler
