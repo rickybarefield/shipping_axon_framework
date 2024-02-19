@@ -5,20 +5,16 @@ import com.appagility.shipping.query.FindAllSailingsQuery;
 import com.appagility.shipping.query.FindAllShipsQuery;
 import com.appagility.shipping.query.Sailing;
 import com.appagility.shipping.query.Ship;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -34,9 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class VersionOne {
 
     private static Duration TIME_TO_WAIT_FOR_PROJECTIONS = Duration.ofSeconds(20);
-
-    @Autowired
-    private ShippingRestEndpoint shippingRestEndpoint;
 
     @Autowired
     private QueryGateway queryGateway;
@@ -78,9 +71,7 @@ public class VersionOne {
 
         var shipId = createdShip.getShipId();
 
-        //        var shipId = shippingRestEndpoint.createShip(new CreateShipRequest("The Jolly Roger")).get();
-
-        waitForQueryToReturn(new FindAllShipsQuery(),
+        waitForMatchingResult(new FindAllShipsQuery(),
                 Ship.class,
                 ship -> ship.getShipId().equals(shipId));
         return shipId;
@@ -94,21 +85,21 @@ public class VersionOne {
                 .expectStatus().isOk()
                 .expectBody().isEmpty();
 
-        waitForQueryToReturn(new FindAllShipsQuery(),
+        waitForMatchingResult(new FindAllShipsQuery(),
                 Ship.class,
                 ship -> ship.getShipId().equals(shipId) && ship.isReadyForSailing());
     }
 
-    private void sailShipToAnUnintendedDestinationAssertingSailingsProjection(String shipId) throws InterruptedException {
-
-        sailShipAssertingSailingsProjection(shipId, "Newport", "Jersey");
-    }
 
     private void sailShipToAnIntendedDestinationAssertingSailingsProjection(String shipId) throws InterruptedException {
 
         String destination = "Cardiff";
         sailShipAssertingSailingsProjection(shipId, destination, destination);
+    }
 
+    private void sailShipToAnUnintendedDestinationAssertingSailingsProjection(String shipId) throws InterruptedException {
+
+        sailShipAssertingSailingsProjection(shipId, "Newport", "Jersey");
     }
 
     private void sailShipAssertingSailingsProjection(String shipId, String intendedDestination, String actualDestination) throws InterruptedException {
@@ -120,7 +111,7 @@ public class VersionOne {
                 .expectStatus().isOk()
                 .expectBody().isEmpty();
 
-        waitForQueryToReturn(new FindAllSailingsQuery(false),
+        waitForMatchingResult(new FindAllSailingsQuery(false),
                 Sailing.class,
                 sailing -> sailing.getShipId().equals(shipId)
                         && sailing.getStatedDestination().equals(intendedDestination));
@@ -132,16 +123,16 @@ public class VersionOne {
                 .expectBody().isEmpty();
 
         boolean limitToUnintendedDestinations = !intendedDestination.equals(actualDestination);
-        waitForQueryToReturn(new FindAllSailingsQuery(false),
+        waitForMatchingResult(new FindAllSailingsQuery(false),
                 Sailing.class,
                 sailing -> sailing.getShipId().equals(shipId)
                         && intendedDestination.equals(sailing.getStatedDestination())
                         && actualDestination.equals(sailing.getDestination()));
     }
 
-    private <TSingleResult> void waitForQueryToReturn(Object query,
-                                                      Class<TSingleResult> singleResultClass,
-                                                      Predicate<TSingleResult> condition) throws InterruptedException {
+    private <TSingleResult> void waitForMatchingResult(Object query,
+                                                       Class<TSingleResult> singleResultClass,
+                                                       Predicate<TSingleResult> condition) throws InterruptedException {
 
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -174,23 +165,6 @@ public class VersionOne {
             assertThat(result).as("Timedout waiting for projection to match").isTrue();
         }
 
-    }
-
-    static String asJsonString(final Object obj) {
-        try {
-            String json = new ObjectMapper().writeValueAsString(obj);
-            return json;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    static <T> T jsonToObject(Class<T> objectClass, final String json) {
-        try {
-            return new ObjectMapper().readValue(json, objectClass);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }
 
