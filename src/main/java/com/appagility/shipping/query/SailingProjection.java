@@ -7,6 +7,7 @@ import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,18 +24,20 @@ public class SailingProjection {
         this.queryUpdateEmitter = queryUpdateEmitter;
     }
 
-    @EventHandler
+    @EventHandler(payloadType = ShipSailedEvent.class)
     public void on(ShipSailedEvent shipSailedEvent) {
 
+        System.out.println("Handling ship sailed event");
         var sailing = new Sailing(shipSailedEvent.getShipId(), shipSailedEvent.getSource(), null, shipSailedEvent.getDestination());
 
         entityManager.persist(sailing);
         queryUpdateEmitter.emit(FindAllSailingsQuery.class, q -> true, sailing);
     }
 
-    @EventHandler
+    @EventHandler(payloadType = ShipDockedEvent.class)
     public void on(ShipDockedEvent shipDockedEvent) {
 
+        System.out.println("Handling ship docked event");
         var query = entityManager.createQuery("SELECT s FROM Sailing s WHERE destination IS NULL AND shipId = :shipId");
         query.setParameter("shipId", shipDockedEvent.getShipId());
 
@@ -42,6 +45,7 @@ public class SailingProjection {
 
         if(results.isEmpty()) {
 
+            
             System.out.println("No sailing exists!");
             return;
         }
@@ -54,6 +58,7 @@ public class SailingProjection {
         var sailing = (Sailing)results.get(0);
 
         sailing.setDestination(shipDockedEvent.getLocation());
+        System.out.println("Emitting update for " + FindAllSailingsQuery.class.getName() + " of " + sailing);
         queryUpdateEmitter.emit(FindAllSailingsQuery.class, q -> !q.isLimitToUnintendedDestinations() || sailing.arrivedInUnintendedDestination(), sailing);
     }
 

@@ -8,6 +8,9 @@ import com.appagility.shipping.query.*;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,9 +31,11 @@ public class ShippingRestEndpoint {
     }
 
     @PostMapping("/ships")
-    public CompletableFuture<String> createShip(@RequestBody CreateShipRequest createShipRequest) {
+    @ResponseBody
+    public CompletableFuture<Ship> createShip(@RequestBody CreateShipRequest createShipRequest) {
 
-        return commandGateway.send(new CreateShipCommand(createShipRequest.getName()));
+        CompletableFuture<String> result =  commandGateway.send(new CreateShipCommand(createShipRequest.getName()));
+        return result.thenApply(r -> new Ship(r, createShipRequest.getName()));
     }
 
     @PostMapping("/shipReadiers")

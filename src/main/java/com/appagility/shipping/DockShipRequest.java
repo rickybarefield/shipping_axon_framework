@@ -8,6 +8,12 @@ public class DockShipRequest {
     public DockShipRequest() {
     }
 
+    public DockShipRequest(String shipId, String location) {
+
+        this.shipId = shipId;
+        this.location = location;
+    }
+
     public String getShipId() {
         return shipId;
     }

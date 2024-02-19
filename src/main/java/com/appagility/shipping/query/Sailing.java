@@ -3,6 +3,7 @@ package com.appagility.shipping.query;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity(name = "Sailing")
@@ -20,6 +21,7 @@ public class Sailing {
     private String statedDestination;
 
     public Sailing(String shipId, String source, String destination, String statedDestination) {
+
         this.id = UUID.randomUUID().toString();
         this.shipId = shipId;
         this.source = source;
@@ -76,5 +78,18 @@ public class Sailing {
                 ", destination='" + destination + '\'' +
                 ", statedDestination='" + statedDestination + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sailing sailing = (Sailing) o;
+        return Objects.equals(id, sailing.id) && Objects.equals(shipId, sailing.shipId) && Objects.equals(source, sailing.source) && Objects.equals(destination, sailing.destination) && Objects.equals(statedDestination, sailing.statedDestination);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, shipId, source, destination, statedDestination);
     }
 }
