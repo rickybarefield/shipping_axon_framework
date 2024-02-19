@@ -1,11 +1,13 @@
 package com.appagility.shipping.upgrading;
 
-import com.appagility.shipping.*;
+import com.appagility.shipping.CreateShipRequest;
+import com.appagility.shipping.DockShipRequest;
+import com.appagility.shipping.SailShipRequest;
+import com.appagility.shipping.ShipReadierRequest;
 import com.appagility.shipping.query.FindAllSailingsQuery;
 import com.appagility.shipping.query.FindAllShipsQuery;
 import com.appagility.shipping.query.Sailing;
 import com.appagility.shipping.query.Ship;
-import jakarta.persistence.EntityManager;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,13 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("v1")
 public class VersionOne {
 
-    private static Duration TIME_TO_WAIT_FOR_PROJECTIONS = Duration.ofSeconds(20);
+    private static final Duration TIME_TO_WAIT_FOR_PROJECTIONS = Duration.ofSeconds(20);
 
     @Autowired
     private QueryGateway queryGateway;
-
-    @Autowired
-    private EntityManager entityManager;
 
     private WebTestClient webTestClient;
 
@@ -64,14 +63,14 @@ public class VersionOne {
 
 
         var createdShip = webTestClient.post().uri("/ships")
-                .body(Mono.just(new CreateShipRequest("Jolly Stuff")), CreateShipRequest.class)
+                .body(Mono.just(new CreateShipRequest("Jolly Roger")), CreateShipRequest.class)
                 .exchange()
                 .expectStatus().isOk()
                 .returnResult(Ship.class).getResponseBody().blockFirst();
 
         var shipId = createdShip.getShipId();
 
-        waitForMatchingResult(new FindAllShipsQuery(),
+        waitForMatchingResult(new FindAllShipsQuery(false),
                 Ship.class,
                 ship -> ship.getShipId().equals(shipId));
         return shipId;
@@ -85,7 +84,7 @@ public class VersionOne {
                 .expectStatus().isOk()
                 .expectBody().isEmpty();
 
-        waitForMatchingResult(new FindAllShipsQuery(),
+        waitForMatchingResult(new FindAllShipsQuery(true),
                 Ship.class,
                 ship -> ship.getShipId().equals(shipId) && ship.isReadyForSailing());
     }
@@ -123,7 +122,7 @@ public class VersionOne {
                 .expectBody().isEmpty();
 
         boolean limitToUnintendedDestinations = !intendedDestination.equals(actualDestination);
-        waitForMatchingResult(new FindAllSailingsQuery(false),
+        waitForMatchingResult(new FindAllSailingsQuery(limitToUnintendedDestinations),
                 Sailing.class,
                 sailing -> sailing.getShipId().equals(shipId)
                         && intendedDestination.equals(sailing.getStatedDestination())

@@ -28,7 +28,7 @@ public class ShipsProjection {
 
         Ship newShip = new Ship(shipCreatedEvent.getShipId(), shipCreatedEvent.getShipName());
         entityManager.persist(newShip);
-        queryUpdateEmitter.emit(FindAllShipsQuery.class, x -> true, newShip);
+        queryUpdateEmitter.emit(FindAllShipsQuery.class, x -> !x.isLimitToShipsReadyForSailing(), newShip);
     }
 
     @EventHandler
@@ -37,18 +37,15 @@ public class ShipsProjection {
         var ship = entityManager.find(Ship.class, shipReadyEvent.getShipId());
         ship.setReadyForSailing(true);
         queryUpdateEmitter.emit(FindAllShipsQuery.class, x -> true, ship);
-        queryUpdateEmitter.emit(FindAllShipsReadyForSailingQuery.class, x -> true, ship);
     }
 
     @QueryHandler
     public List<Ship> handle(FindAllShipsQuery findAllShipsQuery) {
 
-        return entityManager.createQuery("FROM com.appagility.shipping.query.Ship").getResultList();
-    }
+        var query = findAllShipsQuery.isLimitToShipsReadyForSailing()
+                ? "FROM com.appagility.shipping.query.Ship s WHERE s.isReadyForSailing = true"
+                : "FROM com.appagility.shipping.query.Ship";
 
-    @QueryHandler
-    public List<Ship> handle(FindAllShipsReadyForSailingQuery findAllShipsReadyQuery) {
-
-        return entityManager.createQuery("FROM com.appagility.shipping.query.Ship s WHERE s.isReadyForSailing = true").getResultList();
+        return entityManager.createQuery(query).getResultList();
     }
 }

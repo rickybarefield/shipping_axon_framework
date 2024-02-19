@@ -37,6 +37,24 @@ H2 in memory db server for ease of use
 - [ ] Updating events (versioning?)
 - [ ] Updating a projection (replaying events) - see https://docs.axoniq.io/reference-guide/v/4.0/configuring-infrastructure-components/event-processing/event-processors#replaying-events and https://github.com/mrook/axon-projection-rebuild-demo (looks like it's based on a version of axon without the native support for replay)
 
+
+## Versions
+
+### Version One
+
+Ships can be:
+
+* created (`ShipCreatedEvent`)
+* readied for sailing (`ShipReadyForSailingEvent`)
+* sailed ('ShipSailedEvent`)
+* docked (`ShipDockedEvent`)
+
+Two projections:
+
+* SailingProject - Contains sailings which include the source (where they were before), the intended destination (taken from when the sailing in created) and an actual destination (taken from where they docked).
+* ShipsProjection - Contains ships, including their name and whether they have been readied for sailing
+
+
 ## Examples
 
 1.  POST http://localhost:8080/ships { "name": "Jolly Roger" } # Create a ship
