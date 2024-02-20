@@ -36,7 +36,7 @@ H2 in memory db server for ease of use
 - [ ] Updating the aggregate
 - [ ] Updating events (versioning?)
 - [ ] Updating a projection (replaying events) - see https://docs.axoniq.io/reference-guide/v/4.0/configuring-infrastructure-components/event-processing/event-processors#replaying-events and https://github.com/mrook/axon-projection-rebuild-demo (looks like it's based on a version of axon without the native support for replay)
-
+- [ ] Approach to deploying updates (blue/green? what to do with queries whilst rebuilding? Flyway? see https://discuss.axoniq.io/t/best-practices-for-zero-downtime-deployments-event-replay-rebuilding-projections/5008)
 
 ## Versions
 
@@ -49,10 +49,25 @@ Ships can be:
 * sailed ('ShipSailedEvent`)
 * docked (`ShipDockedEvent`)
 
-Two projections:
+Projections:
 
 * SailingProject - Contains sailings which include the source (where they were before), the intended destination (taken from when the sailing in created) and an actual destination (taken from where they docked).
 * ShipsProjection - Contains ships, including their name and whether they have been readied for sailing
+
+Queries:
+
+* FindAllShipsQuery (with option to limit to readied ships)
+* FindAllSailingsQuery (with option to limit to sailings that did not arrive at the intended destination)
+
+### Version Two
+
+This adds an additional projection, to ensure it catches up on the missed events.
+
+* DestinationsProjection (destination name, how many ships have docked there)
+
+and a query for those destinations
+
+* FindAllDestinationsQuery
 
 
 ## Examples

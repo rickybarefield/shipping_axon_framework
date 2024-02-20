@@ -4,13 +4,11 @@ import com.appagility.shipping.command.CreateShipCommand;
 import com.appagility.shipping.command.DockShipCommand;
 import com.appagility.shipping.command.ReadyForSailingCommand;
 import com.appagility.shipping.command.SailShipCommand;
-import com.appagility.shipping.query.FindAllSailingsQuery;
-import com.appagility.shipping.query.FindAllShipsQuery;
-import com.appagility.shipping.query.Sailing;
-import com.appagility.shipping.query.Ship;
+import com.appagility.shipping.query.*;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -67,5 +65,12 @@ public class ShippingRestEndpoint {
     public CompletableFuture<Void> dockShip(@RequestBody DockShipRequest dockShipRequest) {
 
         return commandGateway.send(new DockShipCommand(dockShipRequest.getShipId(), dockShipRequest.getLocation()));
+    }
+
+    @Profile("v2")
+    @GetMapping("/destinations")
+    public CompletableFuture<List<Destination>> getDestinations() {
+
+        return queryGateway.query(new FindAllDestinationsQuery(), ResponseTypes.multipleInstancesOf(Destination.class));
     }
 }
